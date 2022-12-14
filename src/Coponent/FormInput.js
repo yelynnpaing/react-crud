@@ -17,8 +17,9 @@ const FormInput = () => {
   })
   return (
     <form onSubmit={addTodo}>
-        <input type="text" required placeholder='where needs to be done ?' name='todos' id='todos'
-        ref={todoInput} value={todoName} onChange={e => setTodoName(e.target.value.toLowerCase())}
+        <input type="text" required placeholder='where needs to be done ?' 
+        name='todos' id='todos' ref={todoInput} value={todoName} 
+        onChange={e => setTodoName(e.target.value.toLowerCase())}
         />
         <button type='submit'>Create</button>
     </form>

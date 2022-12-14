@@ -1,0 +1,191 @@
+Note for me ***
+\*-------------------------
+css
+component အကုန်လုံးအတွက် css ဖိုင်ခွဲရေးစရာ မလိုအောင် index.css မှာပဲ ရေး/
+color - #555 , #666 , #ccc
+ul > li > active ကို opacity:0.5 and text-decoration: line-through နဲ့ထိန်း
+btn:disabled ကို opacity and cursor:not-allowed နဲ့ထိန်း 
+-------------------------*/
+
+\*-------------------------
+using context (DataProvider.js)
+{ useState, useEffect, createContext } 
+DataContext component ဖန်တီး - createContext();
+
+local storage မှာ Data တွေ သိမ်းဖို့နဲ့ ပြန်ခေါ်သုံးဖို့အတွက် useEffect ကို သုံး/
+localStorage ကနေ Data တွေ ပြန်ခေါ်သုံးဖို့အတွက် JSON.parse method နဲ့ getItem ကိုသုံး/
+Data ရှိ/ မရှိ စစ်ပြီး ပြန်ပေးဖို့အတွက် if(todoStore) setTodos(todoStore) ကိုသုံး
+
+localStorage မှာ setItem method နဲ့ 'todoStore'တစ်ခု ဖန်တီး / 
+data တွေကို useState မှာ ပေးထားတဲ့ value ကို JSON.stringify(todos) method နဲ့သိမ်း/
+
+DataContext component ဖန်တီး ပြီးရင် DataProvider component ဖန်တီး/
+props ကို argument အနေနဲ့သုံး / 
+DataProvider component ရဲ့ return ကို DataContext.Provider ပေး / 
+value ကို useState မှာ သုံးထားတဲ့ တန်ဘိုး နှစ်ခုကို ပြန်ပေး/
+Data တွေပြန်ပေးဖို့အတွက်ကို {props.children} ကို သုံး 
+-------------------------*/
+
+\*-------------------------
+App.js
+DataProvider ကို import လုပ်/ Data တွေကို အခြားသော Component တွေကို မျှဝေဖို့အတွက်
+<FormInput/> , <List/> , <Footer/> အကုန်လုံးကို
+<DataProvider></DataProvider> component နဲ့ အုပ်
+-------------------------*/
+
+\*-------------------------
+FormInput.js
+{useState, useContext, useRef, useEffect} ကိုသုံး/
+(DataProvider.js) မှာ ဖန်တီးထားတဲ့ DataContext component ကို import လုပ်/
+context ကနေ Data ယူဖို့အတွက် - 
+const [todos , setTodos] = useContext(DataContext); ကိုသုံး/
+
+input ကနေ Data တွေယူဖို့အတွက် - 
+const [todoName, setTodoName] = useState(''); ကိုသုံး/
+input value ကို {todoName} သတ်မှတ်/
+
+input မှာ ရိုက်တဲ့ txt တွေကို မြင်ရဖို့အတွက်- 
+onChange={e => setTodoName(e.target.value.toLowerCase())} ကိုသုံး/
+
+form က data တွေ localStorage ကို ပို့ဖို့အတွက် - 
+btn type ကို submit ပေး /
+Form မှာ onSubmit={addTodo} Function ကိုပေး/
+addTodo Function မှာ - e ကို argument ပေး/
+browser refresh မဖြစ်အောင်  e.preventDefault(); ကိုသုံး/
+
+data အသစ်ထည့်ဖို့အတွက်-
+setTodos([...todos, {name:todoName , complete:false}]) ကိုသုံး/
+data အသစ်ထည့်ပြီးသွားရင် input area ထဲမှာ ဘာမှ မကျန်အောင် - 
+setTodoName ('') ကိုသုံး/
+
+cusor focus လုပ်ဖို့အတွက် - useRef() နဲ့ useEffect() ကိုသုံး
+const todoInput = useRef(); သတ်မှတ် / 
+input မှာ ref တန်ဘိုးကို useRef သုံးပြီးသတ်မှတ်ထားတာကို ပြန်ပေး/
+useEffect method ထဲမှာ သတ်မှတ်ထားသော refတန်ဘိုး.current.cursor(); ကိုသုံး
+-------------------------*/
+
+\*-------------------------
+ListItem.js
+{useState} ကိုသုံး/ 
+ListItem ရဲ့ argument မှာ {todo, id, checkComplete, handleEditTodos} ကိုပေး/ 
+
+Edit မှာ သုံးဖို့အတွက် - 
+const [onEdit , SetOnEdit] = useState(false) ကိုသုံး/ 
+
+Edit ပြုလုပ်ပြီး data တွေကို save ဖို့အတွက် - 
+const [editValue, setEditValue] = useState(todo.name) ကိုသုံး/
+
+handleOnEdit function မှာ - SetOnEdit(true) ပေး/
+
+handleSave function မှာ - id ကို argument အဖြစ်ပေး/ 
+SetOnEdit(false) သတ်မှတ်/
+    if(editValue){
+      handleEditTodos(editValue, id)
+    }else{
+      setEditValue(todo.name)
+    }
+
+Edit လုပ်ရင် ပြမယ့် အရာ နှင့် Edit မလုပ်ရင် ပြမယ့်အရာအတွက် - 
+if(onEdit){
+    return မှာ -
+input နဲ့ save btn ပါမယ်/
+input မှာ id="editValue" value={editValue} name="editValue" ကိုသုံး/
+ပြောင်းလဲတာကို သိဖို့အတွက် input မှာ-
+onChange={e => setEditValue(e.target.value.toLowerCase())}/
+
+save ဖို့အတွက် - onClick={() => handleSave(id)} ကိုသုံး/
+
+}
+
+else{
+    return မှာ -
+li တွေကို active class ထည့်ဖို့အတွက် - 
+label မှာ className={todo.complete ? "active": ''} ကိုသုံး/ 
+todo.complete ကိုစစ်ဖို့အတွက် checked={todo.complete} ကိုသုံး/
+checkbox ရဲ့ id = {id} လို့ပေး/ 
+
+ပြောင်းလဲတာကို သိဖို့အတွက် input မှာ- onChange={() => checkComplete(id)} ကိုသုံး/
+label ရဲ့ name ကို {todo.name} လို့ပေး/
+ 	
+btn disabled attr ပေးဖို့အတွက် - disabled={todo.complete} ကိုသုံး/
+btn ကို နှိပ်ပြီး Edit လုပ်ဖို့အတွက် - handleOnEdit function သတ်မှတ်/function ရေး/
+}
+-------------------------*/
+
+\*-------------------------
+List.js
+{useContext} ကိုသုံး / 
+DataContext ကို DataProvider ကနေ import လုပ်/
+ListItems ကို import လုပ်/ 
+
+context ကနေ Data ယူဖို့အတွက် - 
+const [todos , setTodos] = useContext(DataContext); ကိုသုံး/ 
+
+
+switchComplete Function မှာ - id ကို argument အဖြစ်ပေး/
+const newTodos = [...todos] သတ်မှတ်/
+newTodos ကို foreach နဲ့ loop ပတ်/ (todo, index) ကို argument အဖြစ်ပေး/
+if condition ကို သုံး - if(index === id){
+          todo.complete = !todo.complete လို့ သတ်မှတ်
+        }
+setTodos() ထဲမှာ newTodos ကိုပေး/
+
+handleEditTodos fun မှာ - (editValue, id) ကို argument အဖြစ်ပေး/
+const newTodos = [...todos] သတ်မှတ်/
+newTodos ကို foreach နဲ့ loop ပတ်/ (todo, index) ကို argument အဖြစ်ပေး/
+if condition ကို သုံး - if(index === id){
+          todo.complete = editValue လို့ သတ်မှတ်
+        }
+setTodos() ထဲမှာ newTodos ကိုပေး/
+
+return မှာ - 
+todos ကို map နဲ့ loop ပတ်/ (todo, index) ကို argument အဖြစ်ပေး/
+ListItems မှာ todo={todo} key={index} id={index} ကိုသုံး/
+checkComplete အတွက် - switchComplete ကိုသုံး / function ရေး /
+Edit လုပ်ဖို့အတွက် - handleEditTodos ကိုသုံ / function ရေး /
+
+-------------------------*/ 
+
+\*-------------------------
+Footer.js
+{useContext, useState} ကိုသုံး/
+(DataProvider.js) မှာ ဖန်တီးထားတဲ့ DataContext component ကို import လုပ်/
+
+check အတွက် state ဖန်တီး - 
+const [checkAll , setCheckAll] = useState(false)
+
+context ကနေ Data ယူဖို့အတွက် - 
+const [todos , setTodos] = useContext(DataContext); ကိုသုံး/ 
+
+handleCheckAll fun မှာ - parameter - () /
+const newTodos = [...todos] သတ်မှတ်/
+newTodos ကို foreach နဲ့ loop ပတ်/ (todo) ကို argument အဖြစ်ပေး/
+if condition ကို သုံး - if(index === id){
+          todo.complete = !checkAll လို့ သတ်မှတ်
+        }
+setTodos() ထဲမှာ newTodos ကိုပေး/ 
+setCheckAll () ထဲမှာ !checkAll ကိုပေး/
+
+{completNewTodos fun မှာ - parameter - () /
+todos.filter(todo => todo.complete === false) ကိုသုံး/
+
+deleteTodos fun မှာ - parameter - () /
+ setTodos(completNewTodos())
+ setCheckAll(false) ကိုသုံး
+
+return မှာ - 
+todos.length ကို ternary operator နဲ့စစ်/ 
+=== 0 ဆိုရင် - Congratulation စာတန်း ပြမယ် /
+: ဆိုရင် - 
+label မှာ - htmlFor='all' ကိုသုံး/ 
+input မှာ type="checkbox" name='all' id='all' ကိုသုံး/
+ပြောင်းလဲတာကို သိဖို့အတွက် input မှာ- 
+onChange={handleCheckAll} checked= {checkAll} ကိုသုံး/
+handleCheckAll fun ရေး/
+
+p မှာ li အရေအတွက်ကို ဖော်ပြပေးတဲ့နေရာအတွက် -
+{completNewTodos().length} ကိုသုံး /
+
+del btn မှာ - deleteTodos fun ကိုသုံး/
+
+-------------------------*/
